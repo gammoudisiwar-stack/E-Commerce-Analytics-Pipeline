@@ -1,0 +1,48 @@
+# ===== Big Data project .gitignore =====
+
+# Maven / Java
+batch-mapreduce/target/
+*.class
+*.jar
+!**/lib/*.jar
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Spark / Hadoop runtime
+spark-warehouse/
+metastore_db/
+derby.log
+output/
+out/
+part-r-*
+_SUCCESS
+*.crc
+
+# Données volumineuses générées (on garde uniquement l'échantillon fourni)
+data/ecommerce_sales_1M.csv
+data/ecommerce_sales_500k.csv
+*.parquet
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+archive/
+archive.zip
+*.zip
+Projet BigData.txt

@@ -1,0 +1,105 @@
+version: "3.8"
+
+# =============================================================
+#  Cluster Hadoop (1 master + 2 workers) + Spark
+#  Basé sur les images bde2020 (Big Data Europe)
+#  Étape 1 du projet : mise en place de l'environnement
+# =============================================================
+
+services:
+  # ---------------- HDFS NameNode (master) ----------------
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-master
+    restart: unless-stopped
+    ports:
+      - "9870:9870"   # Web UI HDFS NameNode
+      - "9000:9000"   # RPC HDFS
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=ecommerce-bigdata
+    env_file:
+      - ./hadoop.env
+
+  # ---------------- HDFS DataNode 1 (worker) ----------------
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-worker1
+    restart: unless-stopped
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode1:/hadoop/dfs/data
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ./hadoop.env
+
+  # ---------------- HDFS DataNode 2 (worker) ----------------
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-worker2
+    restart: unless-stopped
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+    env_file:
+      - ./hadoop.env
+
+  # ---------------- YARN ResourceManager ----------------
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-resourcemanager
+    restart: unless-stopped
+    ports:
+      - "8088:8088"   # Web UI YARN
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:9870 datanode1:9864 datanode2:9864
+    env_file:
+      - ./hadoop.env
+
+  # ---------------- YARN NodeManager ----------------
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-nodemanager
+    restart: unless-stopped
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:9870 datanode1:9864 resourcemanager:8088
+    env_file:
+      - ./hadoop.env
+
+  # ---------------- Spark Master ----------------
+  spark-master:
+    image: bde2020/spark-master:3.3.0-hadoop3.3
+    container_name: spark-master
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # Web UI Spark Master
+      - "7077:7077"   # Spark Master RPC
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+    volumes:
+      - ../:/project   # le projet est monté dans le conteneur
+
+  # ---------------- Spark Worker ----------------
+  spark-worker:
+    image: bde2020/spark-worker:3.3.0-hadoop3.3
+    container_name: spark-worker
+    restart: unless-stopped
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"   # Web UI Spark Worker
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    volumes:
+      - ../:/project
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode1:
+  hadoop_datanode2:
