@@ -79,8 +79,8 @@ Fichier CSV avec en-tête, **17 colonnes** :
 
 ### 1. Cloner le dépôt
 ```bash
-git clone https://github.com/gammoudisiwar-stack/ecommerce-analytics-pipeline.git
-cd ecommerce-analytics-pipeline
+git clone https://github.com/gammoudisiwar-stack/E-Commerce-Analytics-Pipeline.git
+cd E-Commerce-Analytics-Pipeline
 ```
 
 ### 2. (Optionnel) Générer un plus gros jeu de données

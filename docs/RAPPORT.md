@@ -3,7 +3,7 @@
 **Auteur :** Siwar Gammoudi
 **Module :** Big Data
 **Année :** 2026
-**Dépôt GitHub :** https://github.com/gammoudisiwar-stack/ecommerce-analytics-pipeline
+**Dépôt GitHub :** https://github.com/gammoudisiwar-stack/E-Commerce-Analytics-Pipeline
 
 ---
 
